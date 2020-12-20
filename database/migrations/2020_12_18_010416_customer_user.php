@@ -16,9 +16,9 @@ class CustomerUser extends Migration
         Schema::create('customer_user', function (Blueprint $table) {
             $table->uuid('id')->unique();
             $table->char('user_id', 36);
-            $table->char('number_id', 36);
+            $table->char('customer_id', 36);
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('number_id')->references('id')->on('numbers');
+            $table->foreign('customer_id')->references('id')->on('customers');
             $table->string('permission', 50);
             $table->timestamps();
             $table->softDeletes();
