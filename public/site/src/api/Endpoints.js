@@ -5,6 +5,8 @@ const endpoints = {
   register: BASE_URL + "/api/user/register",
   newcustomer: BASE_URL + "/api/customer/create",
   getcustomers: BASE_URL + "/api/customer/list",
+  getnumbers: BASE_URL + "/api/customer/numbers/list",
+  newnumber: BASE_URL + "/api/customer/numbers",
 };
 
 export { endpoints };

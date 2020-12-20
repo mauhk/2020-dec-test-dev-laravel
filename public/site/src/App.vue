@@ -1,26 +1,21 @@
-
 <template>
   <v-app id="app">
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
         <h1>Dev test</h1>
       </div>
-
       <v-spacer></v-spacer>
-
-      <v-btn
-        href=""
-        target="_blank"
-        @click="logout()"
-        text
-      >
+      <v-btn href="" target="_blank" @click="logout()" text>
         <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>
-
     <v-main> <router-view /> </v-main>
   </v-app>
 </template>
+
+<style>
+@import "./assets/styles/styles.css";
+</style>
 
 <script>
 import * as Session from "@/api/SessionControllers";

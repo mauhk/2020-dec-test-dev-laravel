@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerUser;
+use App\Models\Numbers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +19,59 @@ class CustomerController extends Controller
     {
         Route::post('create', '\App\Http\Controllers\CustomerController@create');
         Route::get('list', '\App\Http\Controllers\CustomerController@get');
+        Route::post('numbers', '\App\Http\Controllers\CustomerController@createNumber');
+        Route::get('numbers/list', '\App\Http\Controllers\CustomerController@getNumbers');
+    }
+
+    public function createNumber(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'customer_id' => 'required|string|min:1|max:500',
+            'number' => 'required|string|min:1|max:500',
+            'status' => 'string|min:1|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $number = Numbers::where('number', $request->number)
+            ->where('customer_id', $request->customer_id)
+            ->first();
+        if (!!$number) {
+            Errors::make("10003");
+        }
+
+        $number = new Numbers;
+        $number->id = (string) Str::orderedUuid();
+        $number->number = $request->number;
+        $number->customer_id = $request->customer_id;
+        $number->save();
+
+        return ["number" => $number->toArray()];
+    }
+
+    public function getNumbers(Request $request)
+    {
+        return DB::table('numbers AS nu')
+            ->select(
+                'nu.id',
+                'nu.number',
+                'nu.status',
+                'cuser.permission'
+            )
+            ->join('customers AS cu', 'nu.customer_id', '=', 'cu.id')
+            ->join('customer_user AS cuser', 'cuser.customer_id', '=', 'cu.id')
+            ->where('cuser.user_id', Auth::user()->id)
+            ->groupBy(
+                'nu.id',
+                'nu.number',
+                'nu.status',
+                'cuser.permission'
+            )
+            ->orderBy($request->sort ?? 'number', $request->sort_desc ?? 'asc')
+            ->paginate($request->per_page ?? 50)
+            ->toArray();
     }
 
     public function get(Request $request)
@@ -39,6 +93,7 @@ class CustomerController extends Controller
                 'cu.status',
                 'cuser.permission'
             )
+            ->orderBy($request->sort ?? 'name', $request->sort_desc ?? 'asc')
             ->paginate($request->per_page ?? 50)
             ->toArray();
     }

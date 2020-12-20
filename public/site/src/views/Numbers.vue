@@ -1,18 +1,20 @@
 <template>
   <v-container>
-    <v-row class="mb-2">
-      <div class="text-right w100">
-        <v-btn color="primary" @click="dialogRegisterCustomer = true">
-          Add customer
-        </v-btn>
-      </div>
+    <v-row class="mb-2 mr-0 ml-0 w100">
+      <v-icon large color="blue darken-2" @click="gotoBack()">
+        mdi-arrow-left
+      </v-icon>
+      <v-spacer></v-spacer>
+      <v-btn color="primary" @click="dialogRegisterNumber = true">
+        Add number
+      </v-btn>
     </v-row>
     <v-row class="text-center"
       ><v-data-table
         :sort-by.sync="sort"
         :sort-desc.sync="sortDesc"
         :headers="headers"
-        :items="customers"
+        :items="numbers"
         :page.sync="page"
         :items-per-page.sync="itemsPerPage"
         :server-items-length="totalItems"
@@ -37,26 +39,18 @@
       </v-data-table>
     </v-row>
 
-    <v-dialog v-model="dialogRegisterCustomer" persistent max-width="600px">
+    <v-dialog v-model="dialogRegisterNumber" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">New customer</span>
+          <span class="headline">New number</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="form.name"
-                  label="Name*"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="form.document"
-                  label="Document*"
-                  type="tel"
+                  v-model="form.number"
+                  label="Number*"
                   required
                 ></v-text-field>
               </v-col>
@@ -68,11 +62,11 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialogRegisterCustomer = false"
+            @click="dialogRegisterNumber = false"
           >
             Close
           </v-btn>
-          <v-btn color="blue darken-1" text @click="newCustomerPost()">
+          <v-btn color="blue darken-1" text @click="newNumberPost()">
             Save
           </v-btn>
         </v-card-actions>
@@ -88,24 +82,18 @@ import router from "@/router/index";
 import Vue from "vue";
 
 export default {
-  name: "Home",
+  name: "Numbers",
 
   data: () => ({
-    dialogRegisterCustomer: false,
+    dialogRegisterNumber: false,
     form: {},
-    customers: [],
+    numbers: [],
     headers: [
       {
-        text: "Name",
+        text: "Number",
         align: "start",
         sortable: true,
-        value: "name",
-      },
-      {
-        text: "Document",
-        align: "end",
-        sortable: true,
-        value: "document",
+        value: "number",
       },
       {
         text: "Actions",
@@ -117,35 +105,37 @@ export default {
     page: 1,
     itemsPerPage: 5,
     totalItems: 0,
-    sort: ["name"],
+    sort: ["number"],
     sortDesc: [true],
+    customer_id: "",
   }),
 
   mounted() {
-    this.getCustomers();
+    this.getNumbers();
+    this.customer_id = this.$route.params.id;
   },
 
   watch: {
     // whenever question changes, this function will run
     page: function () {
-      this.getCustomers();
+      this.getNumbers();
     },
     itemsPerPage: function () {
-      this.getCustomers();
+      this.getNumbers();
     },
     sort: function () {
-      this.getCustomers();
+      this.getNumbers();
     },
     sortDesc: function () {
-      this.getCustomers();
+      this.getNumbers();
     },
   },
 
   methods: {
-    gotoNumbers(item) {
-      router.push({ path: "/numbers/" + item.id });
+    gotoBack() {
+      router.push({ path: "/home" });
     },
-    async getCustomers() {
+    async getNumbers() {
       let filters = {
         page: this.page,
         per_page: this.itemsPerPage,
@@ -158,22 +148,23 @@ export default {
           filters.sort_desc = "desc";
         }
       }
-      var customers = await Services.get(endpoints.getcustomers, filters);
-      console.log(customers);
-      if (customers.result !== undefined) {
-        this.customers = customers.result.data;
-        this.totalItems = customers.result.total;
+      var numbers = await Services.get(endpoints.getnumbers, filters);
+      console.log(numbers);
+      if (numbers.result !== undefined) {
+        this.numbers = numbers.result.data;
+        this.totalItems = numbers.result.total;
       }
       return false;
     },
-    async newCustomerPost() {
-      var user = await Services.post(endpoints.newcustomer, this.form);
-      if (user.result !== undefined) {
+    async newNumberPost() {
+      this.form.customer_id = this.customer_id;
+      var number = await Services.post(endpoints.newnumber, this.form);
+      if (number.result !== undefined) {
         Vue.prototype.$toast("Success!", { color: "success", y: "top", x: "" });
-        this.dialogRegisterCustomer = false;
+        this.dialogRegisterNumber = false;
         this.form = {};
-        this.getCustomers();
-        return user.result;
+        this.getNumbers();
+        return number.result;
       }
       return false;
     },

@@ -9,6 +9,7 @@ class Errors extends Model
     private static $errors = [
         "10001" => "Unauthenticated",
         "10002" => "Customer already registered",
+        "10003" => "Number already registered",
     ];
 
     public static function make($code){
