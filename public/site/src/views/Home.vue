@@ -14,6 +14,7 @@
         :headers="headers"
         :items="customers"
         :page.sync="page"
+        :footer-props="{'items-per-page-options': perPageOptions}"
         :items-per-page.sync="itemsPerPage"
         :server-items-length="totalItems"
         class="elevation-4 w100"
@@ -32,6 +33,20 @@
               </v-icon>
             </template>
             <span>Numbers</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                small
+                class="mr-2"
+                @click="editCustomer(item)"
+                v-bind="attrs"
+                v-on="on"
+              >
+                mdi-pencil
+              </v-icon>
+            </template>
+            <span>Edit</span>
           </v-tooltip>
         </template>
       </v-data-table>
@@ -60,6 +75,9 @@
                   required
                 ></v-text-field>
               </v-col>
+              <v-col cols="12"
+                ><v-select v-model="form.status" :items="status" label="Status"></v-select>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
@@ -72,7 +90,7 @@
           >
             Close
           </v-btn>
-          <v-btn color="blue darken-1" text @click="newCustomerPost()">
+          <v-btn color="blue darken-1" text @click="customerPost()">
             Save
           </v-btn>
         </v-card-actions>
@@ -108,6 +126,12 @@ export default {
         value: "document",
       },
       {
+        text: "Status",
+        align: "end",
+        sortable: true,
+        value: "status",
+      },
+      {
         text: "Actions",
         align: "end",
         sortable: false,
@@ -119,6 +143,8 @@ export default {
     totalItems: 0,
     sort: ["name"],
     sortDesc: [true],
+    status: ["new", "active", "suspended", "cancelled"],
+    perPageOptions: [5, 10, 50, 100, 500],
   }),
 
   mounted() {
@@ -142,6 +168,10 @@ export default {
   },
 
   methods: {
+    editCustomer(item) {
+      this.form = item;
+      this.dialogRegisterCustomer = true;
+    },
     gotoNumbers(item) {
       router.push({ path: "/numbers/" + item.id });
     },
@@ -159,15 +189,18 @@ export default {
         }
       }
       var customers = await Services.get(endpoints.getcustomers, filters);
-      console.log(customers);
       if (customers.result !== undefined) {
         this.customers = customers.result.data;
         this.totalItems = customers.result.total;
       }
       return false;
     },
-    async newCustomerPost() {
-      var user = await Services.post(endpoints.newcustomer, this.form);
+    async customerPost() {
+      let endpoint = endpoints.newcustomer;
+      if (this.form.id) {
+        endpoint = endpoints.editcustomer;
+      }
+      let user = await Services.post(endpoint, this.form);
       if (user.result !== undefined) {
         Vue.prototype.$toast("Success!", { color: "success", y: "top", x: "" });
         this.dialogRegisterCustomer = false;

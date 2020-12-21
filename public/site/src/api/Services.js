@@ -16,6 +16,7 @@ class Services {
   static handleError(response) {
     let action = function (value, kvalue) {
       Vue.prototype.$toast(value, {color: 'error', y: 'top', x: ''});
+      console.log(kvalue);
       if (kvalue == "10001") {
         //login expirado
         Session.remove("user");
@@ -29,8 +30,9 @@ class Services {
           for (const [kvalue, value] of Object.entries(error)) {
             action(value, kvalue);
           }
+        } else {
+          action(error, kerror);
         }
-        action(error, kerror);
       }
     }
   }

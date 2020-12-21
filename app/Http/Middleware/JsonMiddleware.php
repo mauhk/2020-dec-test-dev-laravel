@@ -56,7 +56,7 @@ class JsonMiddleware
                 $response->setData([
                     'message' => $response->exception->getMessage(),
                     'errors' => [
-                        $response->exception->getCode()?: 'exception' => [$response->exception->getMessage()]
+                        $response->exception->getCode() ?: 'exception' => $response->exception->getMessage()
                     ],
                     'file' => $response->exception->getFile(),
                     'line' => $response->exception->getLine(),
