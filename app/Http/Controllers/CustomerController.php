@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -46,18 +45,14 @@ class CustomerController extends Controller
                 'nu.id',
                 'nu.number',
                 'nu.status',
-                'cuser.permission',
             )
             ->join('customers AS cu', 'nu.customer_id', '=', 'cu.id')
-            ->join('customer_user AS cuser', 'cuser.customer_id', '=', 'cu.id')
-            ->where('cuser.user_id', Auth::user()->id)
             ->where('cu.id', $request->customer_id)
             ->whereNull('nu.deleted_at')
             ->groupBy(
                 'nu.id',
                 'nu.number',
                 'nu.status',
-                'cuser.permission',
             )
             ->orderBy($request->sort ?? 'number', $request->sort_desc ?? 'asc')
             ->paginate($request->per_page ?? 50)
@@ -176,16 +171,12 @@ class CustomerController extends Controller
                 'cu.name',
                 'cu.document',
                 'cu.status',
-                'cuser.permission'
             )
-            ->join('customer_user AS cuser', 'cuser.customer_id', '=', 'cu.id')
-            ->where('cuser.user_id', Auth::user()->id)
             ->groupBy(
                 'cu.id',
                 'cu.name',
                 'cu.document',
                 'cu.status',
-                'cuser.permission'
             )
             ->orderBy($request->sort ?? 'name', $request->sort_desc ?? 'asc');
 

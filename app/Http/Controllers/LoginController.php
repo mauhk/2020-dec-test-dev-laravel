@@ -27,7 +27,7 @@ class LoginController extends Controller
             // Authentication passed...
             return Auth::user();
         }
-        Errors::make("10001");
+        Errors::make("10000");
     }
     /**
      * Handle an registration register.

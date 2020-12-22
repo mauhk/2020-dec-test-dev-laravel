@@ -25,12 +25,6 @@
           <span class="ma-2">Register</span>
         </v-btn>
       </v-col>
-
-      <v-col class="mb-5" cols="12">
-        <v-row justify="center">
-          <a class="subheading mx-3" target="_blank"> Forgot password? </a>
-        </v-row>
-      </v-col>
     </v-row>
 
     <v-dialog v-model="dialogRegister" persistent max-width="600px">
