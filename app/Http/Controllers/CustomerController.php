@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\CustomerUser;
 use App\Models\Numbers;
 use App\Models\NumberPreferences;
 use Illuminate\Support\Facades\Route;
@@ -37,7 +36,7 @@ class CustomerController extends Controller
             throw new ValidationException($validator);
         }
 
-        return !!DB::table('numbers')->where('id', $id)->update(['deleted_at' => \Carbon\Carbon::now()]);;
+        return !!DB::table('numbers')->where('id', $id)->update(['deleted_at' => \Carbon\Carbon::now()]);
     }
 
     public function getNumber(Request $request)
@@ -220,13 +219,6 @@ class CustomerController extends Controller
         $customer->document = $request->document;
         $customer->status = $request->status ?? "new";
         $customer->save();
-
-        $customer_user = new CustomerUser;
-        $customer_user->id = (string) Str::orderedUuid();
-        $customer_user->user_id = Auth::user()->id;
-        $customer_user->customer_id = $customer->id;
-        $customer_user->permission = 'owner';
-        $customer_user->save();
 
         return ["customer" => $customer->toArray()];
     }
