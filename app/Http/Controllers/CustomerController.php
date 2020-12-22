@@ -23,10 +23,24 @@ class CustomerController extends Controller
         Route::get('list', '\App\Http\Controllers\CustomerController@get');
         Route::post('numbers', '\App\Http\Controllers\CustomerController@createNumber');
         Route::post('numbers/edit', '\App\Http\Controllers\CustomerController@editNumber');
-        Route::get('numbers/list', '\App\Http\Controllers\CustomerController@getNumbers');
+        Route::get('numbers/list', '\App\Http\Controllers\CustomerController@getNumber');
+        Route::delete('numbers/{id}', '\App\Http\Controllers\CustomerController@deleteNumber');
     }
 
-    public function getNumbers(Request $request)
+    public function deleteNumber(Request $request, $id)
+    {
+        $validator = Validator::make(['id' => $id], [
+            'id' => 'required|string|min:1|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        return !!DB::table('numbers')->where('id', $id)->update(['deleted_at' => \Carbon\Carbon::now()]);;
+    }
+
+    public function getNumber(Request $request)
     {
         $numbers = DB::table('numbers AS nu')
             ->select(
@@ -39,6 +53,7 @@ class CustomerController extends Controller
             ->join('customer_user AS cuser', 'cuser.customer_id', '=', 'cu.id')
             ->where('cuser.user_id', Auth::user()->id)
             ->where('cu.id', $request->customer_id)
+            ->whereNull('nu.deleted_at')
             ->groupBy(
                 'nu.id',
                 'nu.number',

@@ -22,58 +22,35 @@
         class="elevation-4 w100"
       >
         <template v-slot:item.auto_attendant="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                small
-                class="mr-2"
-                @click="editNumber(item)"
-                v-bind="attrs"
-                v-on="on"
-                v-if="item.auto_attendant == 1"
-              >
-                mdi-checkbox-marked-outline
-              </v-icon>
-              <v-icon
-                small
-                class="mr-2"
-                @click="editNumber(item)"
-                v-bind="attrs"
-                v-on="on"
-                v-else
-              >
-                mdi-checkbox-blank-outline
-              </v-icon>
-            </template>
-            <span>Numbers</span>
-          </v-tooltip>
+          <v-icon
+            small
+            class="mr-2"
+            @click="editNumber(item)"
+            v-if="item.auto_attendant == 1"
+          >
+            mdi-checkbox-marked-outline
+          </v-icon>
+          <v-icon
+            small
+            class="mr-2"
+            @click="editNumber(item)"
+            v-else
+          >
+            mdi-checkbox-blank-outline
+          </v-icon>
         </template>
         <template v-slot:item.voicemail_enabled="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon
-                small
-                class="mr-2"
-                @click="editNumber(item)"
-                v-bind="attrs"
-                v-on="on"
-                v-if="item.voicemail_enabled == 1"
-              >
-                mdi-checkbox-marked-outline
-              </v-icon>
-              <v-icon
-                small
-                class="mr-2"
-                @click="editNumber(item)"
-                v-bind="attrs"
-                v-on="on"
-                v-else
-              >
-                mdi-checkbox-blank-outline
-              </v-icon>
-            </template>
-            <span>Numbers</span>
-          </v-tooltip>
+          <v-icon
+            small
+            class="mr-2"
+            @click="editNumber(item)"
+            v-if="item.voicemail_enabled == 1"
+          >
+            mdi-checkbox-marked-outline
+          </v-icon>
+          <v-icon small class="mr-2" @click="editNumber(item)" v-else>
+            mdi-checkbox-blank-outline
+          </v-icon>
         </template>
         <template v-slot:item.actions="{ item }">
           <v-tooltip bottom>
@@ -88,7 +65,21 @@
                 mdi-pencil
               </v-icon>
             </template>
-            <span>Numbers</span>
+            <span>Edit</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                small
+                class="mr-2"
+                @click="deleteNumber(item)"
+                v-bind="attrs"
+                v-on="on"
+              >
+                mdi-delete
+              </v-icon>
+            </template>
+            <span>Delete</span>
           </v-tooltip>
         </template>
       </v-data-table>
@@ -108,6 +99,15 @@
                   label="Number*"
                   required
                 ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12"
+                ><v-select
+                  v-model="form.status"
+                  :items="status"
+                  label="Status"
+                ></v-select>
               </v-col>
             </v-row>
             <v-row>
@@ -194,6 +194,7 @@ export default {
     sortDesc: [true],
     customer_id: "",
     perPageOptions: [5, 10, 50, 100, 500],
+    status: ["active", "inactive", "cancelled"],
   }),
 
   mounted() {
@@ -219,7 +220,7 @@ export default {
 
   methods: {
     editNumber(item) {
-      this.form = item;
+      this.form = JSON.parse(JSON.stringify(item));
       this.dialogRegisterNumber = true;
     },
     gotoBack() {
@@ -262,6 +263,11 @@ export default {
         return number.result;
       }
       return false;
+    },
+    async deleteNumber(item) {
+      await Services.delete(endpoints.deletenumber + item.id);
+      Vue.prototype.$toast("Success!", { color: "success", y: "top", x: "" });
+      this.getNumbers();
     },
   },
 };

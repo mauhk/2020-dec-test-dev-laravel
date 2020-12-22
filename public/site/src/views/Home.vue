@@ -14,7 +14,7 @@
         :headers="headers"
         :items="customers"
         :page.sync="page"
-        :footer-props="{'items-per-page-options': perPageOptions}"
+        :footer-props="{ 'items-per-page-options': perPageOptions }"
         :items-per-page.sync="itemsPerPage"
         :server-items-length="totalItems"
         class="elevation-4 w100"
@@ -76,7 +76,11 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12"
-                ><v-select v-model="form.status" :items="status" label="Status"></v-select>
+                ><v-select
+                  v-model="form.status"
+                  :items="status"
+                  label="Status"
+                ></v-select>
               </v-col>
             </v-row>
           </v-container>
@@ -169,7 +173,7 @@ export default {
 
   methods: {
     editCustomer(item) {
-      this.form = item;
+      this.form = JSON.parse(JSON.stringify(item));
       this.dialogRegisterCustomer = true;
     },
     gotoNumbers(item) {

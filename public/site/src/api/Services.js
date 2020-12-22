@@ -78,7 +78,7 @@ class Services {
 
   static async put(endpoint, payload) {
     await axios
-      .put(endpoint, payload)
+      .put(endpoint, payload, Services.getConfig())
       .then(response => {
         Services.handleError(response);
         return response.data;
@@ -89,10 +89,11 @@ class Services {
       });
   }
 
-  static async delete(endpoint, payload) {
+  static async delete(endpoint) {
     await axios
-      .delete(endpoint, payload)
+      .delete(endpoint, Services.getConfig())
       .then(response => {
+        console.log(response);
         Services.handleError(response);
         return response.data;
       })

@@ -9,6 +9,7 @@ const endpoints = {
   getnumbers: BASE_URL + "/api/customer/numbers/list",
   newnumber: BASE_URL + "/api/customer/numbers",
   editnumber: BASE_URL + "/api/customer/numbers/edit",
+  deletenumber: BASE_URL + "/api/customer/numbers/",
 };
 
 export { endpoints };
