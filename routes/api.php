@@ -28,3 +28,7 @@ Route::middleware('auth')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'customer', 'middleware' => ['auth']], function () {
     App\Http\Controllers\CustomerController::routes();
 });
+
+Route::group(['prefix' => 'customer/numbers', 'middleware' => ['auth']], function () {
+    App\Http\Controllers\NumberController::routes();
+});

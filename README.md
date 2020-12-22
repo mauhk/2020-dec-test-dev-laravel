@@ -18,4 +18,5 @@ Frontend:
 -- npm run serve
 
 Dados para teste:
--- Login: admin@admin.com / admin
+-- Login: admin@admin.com
+-- Senha: admin
